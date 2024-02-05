@@ -4,11 +4,11 @@
 
 #define M 4
 #define K 3
-#define N 3
-#define THREADS 10
+#define N 4
+#define THREADS 5
 
-int A[M][K] = {{1,4}, {2,5}, {3,6}};
-int B[K][N] = {{8,7,6}, {5,4,3}};
+int A[M][K] = {{2,1,3}, {0,-1,-2}, {5,1,-1}, {4,5,8}};
+int B[K][N] = {{3,2,1,0}, {0,4,2,-1}, {-1,3,2,4}};
 int C[M][N];
 
 struct v {
@@ -24,11 +24,24 @@ int main(int argc, char *argv[]) {
     printf("Matrix A:\n");
     for(i = 0; i < M; i++) {
         for(j = 0; j < K; j++) {
-            printf("%d", A[i][j]);
+            printf("%d ", A[i][j]);
         }
 
         printf("\n");
     }
+
+    printf("\n");
+
+    printf("Matrix B:\n");
+    for(i = 0; i < K; i++) {
+        for(j = 0; j < N; j++) {
+            printf("%d ", B[i][j]);
+        }
+
+        printf("\n");
+    }
+
+    printf("\n");
 
     for(i = 0; i < M; i++) {
         for(j = 0; j < N; j++) {
@@ -48,6 +61,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    printf("Matrix C: A x B \n");
     for(i = 0; i < M; i++) {
         for(j = 0; j < N; j++) {
             printf("%d ", C[i][j]);
