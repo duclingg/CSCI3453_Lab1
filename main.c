@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define M 3
-#define K 2
+#define M 4
+#define K 3
 #define N 3
 #define THREADS 10
 
 int A[M][K] = {{1,4}, {2,5}, {3,6}};
-int B[K][N] = {{8,7, 6}, {5,4,3}};
+int B[K][N] = {{8,7,6}, {5,4,3}};
 int C[M][N];
 
 struct v {
@@ -20,6 +20,15 @@ void *runner(void *param);
 
 int main(int argc, char *argv[]) {
     int i, j, count = 0;
+
+    printf("Matrix A:\n");
+    for(i = 0; i < M; i++) {
+        for(j = 0; j < K; j++) {
+            printf("%d", A[i][j]);
+        }
+
+        printf("\n");
+    }
 
     for(i = 0; i < M; i++) {
         for(j = 0; j < N; j++) {
