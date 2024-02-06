@@ -41,11 +41,12 @@ int main(int argc, char *argv[]) {
         printf("Error opening file %s\n", argv[1]);
         return 1;
     }
-    
+
 	int matA[MAX][MAX]; 
 	int matB[MAX][MAX]; 
 	
-	int r1=MAX,c1=MAX,r2=MAX,c2=MAX,i,j,k;
+	int r1=MAX,c1=MAX,r2=MAX,c2=MAX;
+    int i,j,k;
 
 	// read matrix A dimensions and elements
     fscanf(fp, "%d %d", &r1, &c1);
