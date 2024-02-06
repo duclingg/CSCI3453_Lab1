@@ -25,4 +25,7 @@ Correctly reading from input file with small maximum row and column size. Matrix
 
 
 ## How to build and run program
-
+1. Enter the command `make` in the Terminal
+2. Run the executable `main.o` by entering the command `./main.o` in the Terminal
+3. Enter the input file you would like to use on the program
+4. You can clean and remove the executable file by entering the command `rm main.o`s
