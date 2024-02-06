@@ -4,7 +4,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define MAX 4
+#define MAX 4 // *** change to 10000 max size for matrix row and column ***
 
 // each thread computes single element in the resultant matrix
 void *mult(void* arg) {
@@ -24,6 +24,7 @@ void *mult(void* arg) {
 }
 
 int main(int argc, char *argv[]) {
+    // get input file name from user
     char filename[50];
     if(argc!=2) {
         printf("Enter the input file name: ");
@@ -32,12 +33,15 @@ int main(int argc, char *argv[]) {
         strcpy(filename, argv[1]);
     }
 
+    // read the file
     FILE *fp = fopen(filename, "r");
+
+    // error if file cannot open
     if(fp==NULL) {
         printf("Error opening file %s\n", argv[1]);
         return 1;
     }
-
+    
 	int matA[MAX][MAX]; 
 	int matB[MAX][MAX]; 
 	
@@ -97,7 +101,7 @@ int main(int argc, char *argv[]) {
 			// stores row and column elements in data 
 			data = (int *)malloc((20)*sizeof(int));
 			data[0] = c1;
-	
+
 			for (k = 0; k < c1; k++) {
 				data[k+1] = matA[i][k];
             }
@@ -107,16 +111,13 @@ int main(int argc, char *argv[]) {
             }
 			
 			// creates threads
-			pthread_create(&threads[count++], NULL, 
-			mult, (void*)(data));
+			pthread_create(&threads[count++], NULL, mult, (void*)(data));
 		}
     }
 	
 	printf("Matrix C (A x B):\n");
-
 	for (i = 0; i < max; i++) {
 	    void *k;
-	
 	    // joins all threads and collecting return value 
 	    pthread_join(threads[i], &k);
 	    int *p = (int *)k;

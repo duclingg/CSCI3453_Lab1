@@ -13,6 +13,14 @@ Ensures the capability to handle multiple sets of input matrices by continuously
   
 Labeled each processed set of data to indicate the corresponding output (e.g., Matrix A, Matrix B, etc.). The program should accommodate matrices with a maximum size of 10000x10000.  
 
+## Status of program
+Currently:  
+Correctly reading from input file with small maximum row and column size. Matrix multiplcation working as intended.
+
+### TODO:
+- Print out which worker thread is being used for each row in the resultant matrix
+- Display total execution time
+
 ## Source Files
 
 
