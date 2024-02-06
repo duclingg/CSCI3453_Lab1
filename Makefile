@@ -1,21 +1,17 @@
-# Makefile for 'client' program
+# Makefile for 'main' program
 
 # Our output program name
-PROG = Client
+PROG = main
 
 # The compiler
 CC = gcc
 
 # Debugging flags
-CFLAGS = -g -Wall
+CFLAGS = -lpthread -o
 
-all: client
-
-client: client.c
-	  $(CC) $(CFLAGS) client.c -o client
-	
-
+all: main.c
+	  $(CC) $(CFLAGS) main.o main.c
 
 # Clean removes build files that are created
 clean:
-	rm client
+	rm main.o
