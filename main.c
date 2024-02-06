@@ -21,6 +21,7 @@ void *runner(void *param);
 int main(int argc, char *argv[]) {
     int i, j, count = 0;
 
+    // print Matrix A
     printf("Matrix A:\n");
     for(i = 0; i < M; i++) {
         for(j = 0; j < K; j++) {
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
 
     printf("\n");
 
+    // print Matrix B
     printf("Matrix B:\n");
     for(i = 0; i < K; i++) {
         for(j = 0; j < N; j++) {
@@ -43,6 +45,7 @@ int main(int argc, char *argv[]) {
 
     printf("\n");
 
+    // multiply Matrix A and B
     for(i = 0; i < M; i++) {
         for(j = 0; j < N; j++) {
             struct v *data = (struct v*)malloc(sizeof(struct v));
@@ -61,6 +64,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // print resulting Matrix C 
     printf("Matrix C: A x B \n");
     for(i = 0; i < M; i++) {
         for(j = 0; j < N; j++) {
