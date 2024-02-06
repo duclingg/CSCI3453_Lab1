@@ -2,6 +2,7 @@
 #include<pthread.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include<string.h>
 
 #define MAX 4
 
@@ -22,23 +23,31 @@ void *mult(void* arg) {
 	pthread_exit(p);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    char filename[50];
+    if(argc!=2) {
+        printf("Enter the input file name: ");
+        scanf("%s", filename);
+    } else {
+        strcpy(filename, argv[1]);
+    }
+
+    FILE *fp = fopen(filename, "r");
+    if(fp==NULL) {
+        printf("Error opening file %s\n", argv[1]);
+        return 1;
+    }
+
 	int matA[MAX][MAX]; 
 	int matB[MAX][MAX]; 
 	
 	int r1=MAX,c1=MAX,r2=MAX,c2=MAX,i,j,k;
 
-	// generates random values in matrix A
-	for (i = 0; i < r1; i++) {
-		for (j = 0; j < c1; j++) {
-			matA[i][j] = rand() % 10; 
-        }
-    } 
-		
-	// generates random values in matrix B 
-	for (i = 0; i < r1; i++) {
-		for (j = 0; j < c1; j++) {
-			matB[i][j] = rand() % 10; 
+	// read matrix A dimensions and elements
+    fscanf(fp, "%d %d", &r1, &c1);
+    for(i=0; i<r1; i++) {
+        for(j=0; j<c1; j++) {
+            fscanf(fp, "%d", &matA[i][j]);
         }
     }
 	
@@ -50,6 +59,14 @@ int main() {
         }
 		printf("\n");
 	}
+
+    // read matrix B dimensions and elements
+    fscanf(fp, "%d %d", &r2, &c2);
+    for(i=0; i<r2; i++) {
+        for(j=0; j<c2; j++) {
+            fscanf(fp, "%d", &matB[i][j]);
+        }
+    }
 			
 	// displays matrix B
     printf("Matrix B:\n");	 
@@ -59,6 +76,13 @@ int main() {
         }
 		printf("\n"); 
 	}
+
+    fclose(fp);
+
+    if(c1!=r2) {
+        printf("Error: Matrix dimensions mismatch for multiplication.\n");
+        return 1;
+    }
 	
 	int max = r1*c2;
 	
