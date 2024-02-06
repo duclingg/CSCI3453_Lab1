@@ -65,6 +65,8 @@ int main(int argc, char *argv[]) {
 		printf("\n");
 	}
 
+	printf("\n");
+
     // read matrix B dimensions and elements
     fscanf(fp, "%d %d", &r2, &c2);
     for(i=0; i<r2; i++) {
@@ -81,6 +83,8 @@ int main(int argc, char *argv[]) {
         }
 		printf("\n"); 
 	}
+
+	printf("\n");
 
     fclose(fp);
 
