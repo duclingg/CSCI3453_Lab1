@@ -14,12 +14,12 @@ Ensures the capability to handle multiple sets of input matrices by continuously
 Labeled each processed set of data to indicate the corresponding output (e.g., Matrix A, Matrix B, etc.). The program should accommodate matrices with a maximum size of 10000x10000.  
 
 ## Status of program
-Currently:  
-Correctly reading from input file with small maximum row and column size. Matrix multiplcation working as intended.
+Correctly reads from input file with *small* maximum row and column size. Matrix multiplcation working as intended.
 
 ### TODO:
 - Print out which worker thread is being used for each row in the resultant matrix
 - Display total execution time
+- Increase maximum matrix row and column size
 
 ## Source Files
 
@@ -28,4 +28,4 @@ Correctly reading from input file with small maximum row and column size. Matrix
 1. Enter the command `make` in the Terminal
 2. Run the executable `main.o` by entering the command `./main.o` in the Terminal
 3. Enter the input file you would like to use on the program
-4. You can clean and remove the executable file by entering the command `rm main.o`
+4. You can clean and remove the executable file by entering the command:  `rm main.o`
