@@ -3,6 +3,7 @@
 #include<unistd.h>
 #include<stdlib.h>
 #include<string.h>
+#include<time.h>
 
 #define MAX 4 // *** change to 10000 max size for matrix row and column ***
 
@@ -92,46 +93,70 @@ int main(int argc, char *argv[]) {
         printf("Error: Matrix dimensions mismatch for multiplication.\n");
         return 1;
     }
-	
-	int max = r1*c2;
-	
-	// declares array of threads of size r1*c2	 
-	pthread_t *threads;
-	threads = (pthread_t*)malloc(max*sizeof(pthread_t));
-	
-	int count = 0;
-	int* data = NULL;
-	for (i = 0; i < r1; i++) {
-		for (j = 0; j < c2; j++) {
-			// stores row and column elements in data 
-			data = (int *)malloc((20)*sizeof(int));
-			data[0] = c1;
 
-			for (k = 0; k < c1; k++) {
-				data[k+1] = matA[i][k];
-            }
-	
-			for (k = 0; k < r2; k++) {
-				data[k+c1+1] = matB[k][j];
-            }
+	// initialize number of threads to test
+	int num_threads[] = {2}; // change as needed
+	int num_tests = sizeof(num_threads) / sizeof(num_threads[0]);
+
+	for(int t=0; t<num_tests; t++) {
+		int num_threads_to_test = num_threads[t];
+
+		// start timer
+		clock_t start, end;
+		double cpu_time_used;
+		start = clock();
+
+		int max = r1*r2;
+
+		// declare array of threads of size r1*c2
+		pthread_t *threads;
+		threads = (pthread_t*)malloc(max*sizeof(pthread_t));
+
+		int count = 0;
+		int*data = NULL;
+		for(int i=0; i<r1; i++) {
+			for(j=0; j<c1; j++) {
+				// stores row and column elements in data
+				data = (int *)malloc((20)*sizeof(int));
+				data[0] = c1;
+
+				for(k=0; k<c1; k++) {
+					data[k+1] = matA[i][j];
+				}
+
+				for(k=0; k<r2; k++) {
+					data[k+c1+1] = matB[i][j];
+				}
+
+				// creates threads
+				pthread_create(&threads[count++], NULL, mult, (void*)(data));
+
+				// stops creating threads after max number of threads to test is created
+				if(count == num_threads_to_test) {
+					break;
+				}
+			}
 			
-			// creates threads
-			pthread_create(&threads[count++], NULL, mult, (void*)(data));
+			if(count == num_threads_to_test) {
+				break;
+			}
 		}
-    }
-	
-	printf("Matrix C (A x B):\n");
-	for (i = 0; i < max; i++) {
-	    void *k;
-	    // joins all threads and collecting return value 
-	    pthread_join(threads[i], &k);
-	    int *p = (int *)k;
-	    printf("%d ",*p);
 
-	    if ((i + 1) % c2 == 0) {
-		    printf("\n");
-        }
-    }
+		// join threads
+		for(i=0; i<count; i++) {
+			void *k;
+			pthread_join(threads[i], &k);
+			free(k);
+		}
+
+		// stop the timer
+		end = clock();
+		cpu_time_used = ((double) (end - start)) * 1000 / CLOCKS_PER_SEC;
+		printf("Total execution time using %d threads is %.2f ms.", num_threads_to_test, cpu_time_used);
+
+		// release threads from the process
+		free(threads);
+	}
 
 	return 0;
 }
