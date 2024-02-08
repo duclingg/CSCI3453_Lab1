@@ -20,6 +20,7 @@ void *mult(void* arg) {
     int *p = (int*)malloc(sizeof(int));
     *p = k;
     
+    pthread_self();
     // terminates a thread and return value is passed as pointer
     pthread_exit(p);
 }
@@ -101,7 +102,6 @@ int main(int argc, char *argv[]) {
 
     for (int t = 0; t < num_tests; t++) {
         int num_threads_to_test = num_threads;
-        //printf("\nTesting with %d threads:\n", num_threads_to_test);
 
         // start the timer
         clock_t start, end;
@@ -133,9 +133,11 @@ int main(int argc, char *argv[]) {
                 // creates threads
                 pthread_create(&threads[count++], NULL, mult, (void*)(data));
             }
+
+            printf("Created worker thread %d for row %d\n", threads, i);
         }
 
-		printf("Matrix C (A x B):\n");
+		printf("\nMatrix C (A x B):\n");
 		for(i=0; i<max; i++) {
 			void *k;
 			// join all threads and collect return value
