@@ -1,161 +1,147 @@
-#include<stdio.h>
-#include<pthread.h>
-#include<unistd.h>
-#include<stdlib.h>
-#include<string.h>
-#include<time.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
 
-#define MAX 4 // *** change to 10000 max size for matrix row and column ***
+#define MAX_SIZE 10000
+#define MAX_THREADS 64
 
-// each thread computes single element in the resultant matrix
-void *mult(void* arg) {
-    int *data = (int *)arg;
-    int k = 0, i = 0;
+// initialize matrices
+int matA[MAX_SIZE][MAX_SIZE];
+int matB[MAX_SIZE][MAX_SIZE];
+int matC[MAX_SIZE][MAX_SIZE];
+
+int r1, c1, r2, c2;
+
+// structure to pass arguments to the thread
+typedef struct {
+    int row;
+} thread_args;
+
+// function to multiply a row of matrices A and B
+void* multiply_row(void* arg) {
+    thread_args* args = (thread_args*)arg;
+    int row = args->row;
     
-    int x = data[0];
-    for (i = 1; i <= x; i++) {
-        k += data[i]*data[i+x];
+    for (int j = 0; j < c2; j++) {
+        matC[row][j] = 0;
+        for (int k = 0; k < c1; k++) {
+            matC[row][j] += matA[row][k] * matB[k][j];
+        }
     }
-    
-    int *p = (int*)malloc(sizeof(int));
-    *p = k;
-    
-    pthread_self();
-    // terminates a thread and return value is passed as pointer
-    pthread_exit(p);
+
+    pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[]) {
-    // get input file name from user
-    char filename[50];
-    if(argc!=2) {
-        printf("Enter the input file name: ");
-        scanf("%s", filename);
-    } else {
-        strcpy(filename, argv[1]);
+// function to read matrix from file
+bool read_matrix(FILE* fp, int mat[MAX_SIZE][MAX_SIZE], int* rows, int* cols) {
+    if (fscanf(fp, "%d %d", rows, cols) != 2)
+        return false;
+
+    for (int i = 0; i < *rows; i++) {
+        for (int j = 0; j < *cols; j++) {
+            if (fscanf(fp, "%d", &mat[i][j]) != 1)
+                return false;
+        }
+    }
+    return true;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        printf("Usage: %s <input_file> <num_threads>\n", argv[0]);
+        return 1;
     }
 
-    // read the file
-    FILE *fp = fopen(filename, "r");
+    int num_threads = atoi(argv[2]);
+    if (num_threads <= 0 || num_threads > MAX_THREADS) {
+        printf("Invalid number of threads\n");
+        return 1;
+    }
 
-    // error if file cannot open
-    if(fp==NULL) {
+    FILE* fp = fopen(argv[1], "r");
+    if (!fp) {
         printf("Error opening file %s\n", argv[1]);
         return 1;
     }
 
-    int matA[MAX][MAX]; 
-    int matB[MAX][MAX]; 
-    int matC[MAX][MAX];
-    
-    int r1=MAX,c1=MAX,r2=MAX,c2=MAX;
-    int i,j,k;
-
-    // read matrix A dimensions and elements
-    fscanf(fp, "%d %d", &r1, &c1);
-    for(i=0; i<r1; i++) {
-        for(j=0; j<c1; j++) {
-            fscanf(fp, "%d", &matA[i][j]);
-        }
+    // read matrix A
+    if (!read_matrix(fp, matA, &r1, &c1)) {
+        printf("Error reading matrix A\n");
+        fclose(fp);
+        return 1;
     }
-    
-    // displays matrix A    
-    printf("Matrix A:\n");    
-    for(i = 0; i < r1; i++) {
-        for(j = 0; j < c1; j++) {
+
+    // read matrix B
+    if (!read_matrix(fp, matB, &r2, &c2)) {
+        printf("Error reading matrix B\n");
+        fclose(fp);
+        return 1;
+    }
+
+    fclose(fp);
+
+    // check if dimensions are compatible for multiplication
+    if (c1 != r2) {
+        printf("Error: Matrix dimensions mismatch for multiplication\n");
+        return 1;
+    }
+
+    // print Matrix A
+    printf("Matrix A:\n");
+    for (int i = 0; i < r1; i++) {
+        for (int j = 0; j < c1; j++) {
             printf("%d ", matA[i][j]);
         }
         printf("\n");
     }
-
     printf("\n");
 
-    // read matrix B dimensions and elements
-    fscanf(fp, "%d %d", &r2, &c2);
-    for(i=0; i<r2; i++) {
-        for(j=0; j<c2; j++) {
-            fscanf(fp, "%d", &matB[i][j]);
-        }
-    }
-            
-    // displays matrix B
-    printf("Matrix B:\n");    
-    for(i = 0; i < r2; i++) {
-        for(j = 0; j < c2; j++) {
+    // print Matrix B
+    printf("Matrix B:\n");
+    for (int i = 0; i < r2; i++) {
+        for (int j = 0; j < c2; j++) {
             printf("%d ", matB[i][j]);
         }
-        printf("\n"); 
+        printf("\n");
     }
-
     printf("\n");
 
-    fclose(fp);
+    // initialize threads
+    pthread_t threads[MAX_THREADS];
+    thread_args args[MAX_THREADS];
 
-    if(c1!=r2) {
-        printf("Error: Matrix dimensions mismatch for multiplication.\n");
-        return 1;
-    }
+    clock_t start_time = clock();
 
-    // Number of threads to test
-    int num_threads = 1; // Add more values as needed
-    int num_tests = sizeof(num_threads) / sizeof(num_threads);
-
-    for (int t = 0; t < num_tests; t++) {
-        int num_threads_to_test = num_threads;
-
-        // start the timer
-        clock_t start, end;
-        double cpu_time_used;
-        start = clock();
-        
-        int max = r1*c2;
-        
-        // declares array of threads of size r1*c2     
-        pthread_t *threads;
-        threads = (pthread_t*)malloc(max*sizeof(pthread_t));
-        
-        int count = 0;
-        int* data = NULL;
-        for (i = 0; i < r1; i++) {
-            for (j = 0; j < c2; j++) {
-                // stores row and column elements in data 
-                data = (int *)malloc((20)*sizeof(int));
-                data[0] = c1;
-
-                for (k = 0; k < c1; k++) {
-                    data[k+1] = matA[i][k];
-                }
-        
-                for (k = 0; k < r2; k++) {
-                    data[k+c1+1] = matB[k][j];
-                }
-                
-                // creates threads
-                pthread_create(&threads[count++], NULL, mult, (void*)(data));
-            }
-
-            printf("Created worker thread %d for row %d\n", threads, i);
+    // create threads to compute each row of result matrix
+    for (int i = 0; i < r1; i++) {
+        args[i].row = i;
+        if (pthread_create(&threads[i], NULL, multiply_row, &args[i]) != 0) {
+            printf("Error creating thread\n");
+            return 1;
         }
-
-		printf("\nMatrix C (A x B):\n");
-		for(i=0; i<max; i++) {
-			void *k;
-			// join all threads and collect return value
-			pthread_join(threads[i], &k);
-			int *p = (int *)k;
-			printf("%d ", *p);
-
-			if((i+1) % c2 == 0) {
-				printf("\n");
-			}
-		}
-
-        end = clock();
-        cpu_time_used = ((double) (end - start)) * 1000 / CLOCKS_PER_SEC; // Convert to milliseconds
-        printf("\nTotal execution time using %d threads is %.2f milliseconds\n", num_threads_to_test, cpu_time_used);
-
-        free(threads);
+        printf("Created worker thread %lu for row %d\n", threads[i], i);
     }
+
+    // wait for all threads to finish
+    for (int i = 0; i < r1; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    clock_t end_time = clock();
+    double total_time = ((double)(end_time - start_time)) * 1000 / CLOCKS_PER_SEC;
+
+    // print result matrix C
+    printf("\nMatrix C = A x B:\n");
+    for (int i = 0; i < r1; i++) {
+        for (int j = 0; j < c2; j++) {
+            printf("%d ", matC[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nTotal execution time using %d threads is %.3f ms\n", num_threads, total_time);
 
     return 0;
 }

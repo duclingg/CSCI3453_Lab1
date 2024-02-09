@@ -14,11 +14,12 @@ Ensures the capability to handle multiple sets of input matrices by continuously
 Labeled each processed set of data to indicate the corresponding output (e.g., Matrix A, Matrix B, etc.). The program should accommodate matrices with a maximum size of 10000x10000.  
 
 ## Status of program
-Correctly reads from input file with **small** maximum row and column size. Matrix multiplcation working as intended. Displays total execution time for the multiplication.
+Correctly reads from input file. Matrix multiplcation working as intended. Displays total execution time for the multiplication and worker threads created for each row.
 
-#### TODO:
-- Print out the correct thread ID for the worker threads
-- Increase maximum matrix row and column size
+#### Questions for Office Hours:
+- Is the program running as intended?
+- I don't see a time in csegrid but I do for my system. For the output documentation, should I use the data that I get from my system? 
+- Also, how large should the testing input size be for this?
 
 ## Source Files
 main.c
@@ -28,6 +29,6 @@ input.txt
 ## How to build and run program
 1. Unzip the package
 2. Enter the command `make` in the Terminal
-3. Run the executable `main.o` by entering the command `./main.o`
+3. Run the executable `main.o` by entering the command `./main.o <input_file> <num_of_threads>`
 4. Enter the input file you would like to use on the program
 5. Remove the executable file by entering the command `rm main.o`
