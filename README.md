@@ -22,13 +22,12 @@ Correctly reads from input file. Matrix multiplcation working as intended. Displ
 - Also, how large should the testing input size be for this?
 
 ## Source Files
-main.c
-Makefile
-input.txt
+main.c  
+Makefile  
+input.txt  
 
 ## How to build and run program
 1. Unzip the package
 2. Enter the command `make` in the Terminal
 3. Run the executable `main.o` by entering the command `./main.o <input_file> <num_of_threads>`
-4. Enter the input file you would like to use on the program
 5. Remove the executable file by entering the command `rm main.o`
