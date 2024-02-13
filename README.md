@@ -16,11 +16,6 @@ Labeled each processed set of data to indicate the corresponding output (e.g., M
 ## Status of program
 Correctly reads from input file. Matrix multiplcation working as intended. Displays total execution time for the multiplication and worker threads created for each row.
 
-#### Questions for Office Hours:
-- Is the program running as intended?
-- I don't see a time in csegrid but I do for my system. For the output documentation, should I use the data that I get from my system? 
-- Also, how large should the testing input size be for this?
-
 ## Source Files
 main.c  
 Makefile  
